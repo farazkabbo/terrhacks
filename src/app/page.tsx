@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useEffect } from 'react';
 import { Camera, Shield, Activity, Brain, Users, CheckCircle, ArrowRight, Play, Star, Menu, X } from 'lucide-react';
 

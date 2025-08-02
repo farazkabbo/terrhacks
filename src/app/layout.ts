@@ -1,3 +1,5 @@
+/*
+
 import './globals.css'
 import { ClerkProvider } from '@clerk/nextjs'
 import type { Metadata } from 'next'
@@ -25,4 +27,4 @@ export default function RootLayout({
     </ClerkProvider>
   )
 }
-```
+  */
