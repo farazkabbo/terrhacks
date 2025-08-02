@@ -22,6 +22,7 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { useUser, SignedIn, SignedOut, UserButton, SignOutButton } from '@clerk/nextjs';
 import Link from 'next/link';
+import Webcam from 'react-webcam';
 
 const GaitGuardDashboard = () => {
   const [isMonitoring, setIsMonitoring] = useState(false);
@@ -35,6 +36,8 @@ const GaitGuardDashboard = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+  const WebcamComponent = () => <Webcam className='w-full h-full object-cover rounded-xl'/>;
+
 
   // Show loading while Clerk loads
   if (!isLoaded) {
@@ -224,13 +227,7 @@ const GaitGuardDashboard = () => {
 
                 <div className="aspect-video bg-slate-900/50 rounded-xl mb-6 flex items-center justify-center border border-purple-500/20">
                   {isMonitoring ? (
-                    <div className="text-center">
-                      <div className="w-32 h-32 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4 mx-auto animate-pulse">
-                        <div className="w-16 h-16 bg-white rounded-full"></div>
-                      </div>
-                      <p className="text-white">Detecting gait patterns...</p>
-                      <p className="text-gray-400 text-sm mt-2">User: {user?.firstName || 'Monitoring'}</p>
-                    </div>
+                    WebcamComponent() // Render Webcam component when monitoring is active
                   ) : (
                     <div className="text-center">
                       <Camera className="w-16 h-16 text-gray-500 mx-auto mb-4" />
