@@ -20,9 +20,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Create a directory to save received images
-os.makedirs("received_images", exist_ok=True)
-
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the FastAPI application!"}
@@ -71,27 +68,23 @@ async def websocket_image(websocket: WebSocket):
                     else:
                         img_bgr = img_array
                     
-                    # Save the image with timestamp
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:-3]
-                    filename = f"received_images/image_{timestamp}.{image_format}"
-                    cv2.imwrite(filename, img_bgr)
+                    # Get image info
+                    height, width = img_bgr.shape[:2]
+                    
+                    # TODO: Add your gait analysis logic here
+                    # For now, just process the frame without saving
                     
                     # Display the image using OpenCV
                     cv2.imshow("Received Image", img_bgr)
                     cv2.waitKey(1)  # Non-blocking wait
                     
-                    # Get image info
-                    height, width = img_bgr.shape[:2]
-                    
-                    print(f"Image received and displayed: {width}x{height}, saved as {filename}")
+                    print(f"Frame processed: {width}x{height}")
                     
                     # Send confirmation back to frontend
                     response = {
                         "status": "success",
-                        "message": "Image received and displayed",
-                        "filename": filename,
-                        "dimensions": {"width": width, "height": height},
-                        "timestamp": timestamp
+                        "message": "Frame processed",
+                        "dimensions": {"width": width, "height": height}
                     }
                     
                     await websocket.send_text(json.dumps(response))
@@ -121,20 +114,18 @@ async def websocket_image(websocket: WebSocket):
                     else:
                         img_bgr = img_array
                     
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:-3]
-                    filename = f"received_images/image_{timestamp}.jpeg"
-                    cv2.imwrite(filename, img_bgr)
+                    # Get image info
+                    height, width = img_bgr.shape[:2]
                     
+                    # Display the image using OpenCV
                     cv2.imshow("Received Image", img_bgr)
                     cv2.waitKey(1)
                     
-                    height, width = img_bgr.shape[:2]
-                    print(f"Image received: {width}x{height}, saved as {filename}")
+                    print(f"Direct base64 frame processed: {width}x{height}")
                     
                     await websocket.send_text(json.dumps({
                         "status": "success",
-                        "message": "Direct base64 image received",
-                        "filename": filename,
+                        "message": "Frame processed",
                         "dimensions": {"width": width, "height": height}
                     }))
                     

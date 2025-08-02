@@ -134,7 +134,7 @@ const GaitGuardDashboard = () => {
       // Start frame capture interval (every 500ms = 2 FPS)
       intervalRef.current = setInterval(() => {
         captureAndSendFrame();
-      }, 500);
+      }, 20);
       
     } else {
       // Stop monitoring
