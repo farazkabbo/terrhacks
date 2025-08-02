@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   Activity, 
   Camera, 
@@ -28,7 +28,14 @@ const GaitGuardDashboard = () => {
   const [isMonitoring, setIsMonitoring] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [selectedTimeRange, setSelectedTimeRange] = useState('7d');
+  const [wsStatus, setWsStatus] = useState('disconnected');
+  const [frameCount, setFrameCount] = useState(0);
+  const [processingStatus, setProcessingStatus] = useState('');
   const { user, isLoaded } = useUser();
+  
+  const webcamRef = useRef<Webcam>(null);
+  const wsRef = useRef<WebSocket | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -36,7 +43,159 @@ const GaitGuardDashboard = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-  const WebcamComponent = () => <Webcam className='w-full h-full object-cover rounded-xl'/>;
+
+  // WebSocket connection management
+  const connectWebSocket = useCallback(() => {
+    try {
+      const ws = new WebSocket('ws://localhost:8000/ws/image');
+      
+      ws.onopen = () => {
+        console.log('WebSocket connected');
+        setWsStatus('connected');
+        setProcessingStatus('Connected to AI server');
+      };
+      
+      ws.onmessage = (event) => {
+        try {
+          const response = JSON.parse(event.data);
+          console.log('Server response:', response);
+          
+          if (response.status === 'success') {
+            setProcessingStatus(`Frame processed: ${response.dimensions?.width}x${response.dimensions?.height}`);
+          } else if (response.status === 'error') {
+            setProcessingStatus(`Error: ${response.message}`);
+          }
+        } catch (error) {
+          console.log('Raw server message:', event.data);
+          setProcessingStatus('Frame processed successfully');
+        }
+      };
+      
+      ws.onclose = () => {
+        console.log('WebSocket disconnected');
+        setWsStatus('disconnected');
+        setProcessingStatus('Disconnected from AI server');
+      };
+      
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        setWsStatus('error');
+        setProcessingStatus('Connection error');
+      };
+      
+      wsRef.current = ws;
+    } catch (error) {
+      console.error('Failed to connect WebSocket:', error);
+      setWsStatus('error');
+      setProcessingStatus('Failed to connect to AI server');
+    }
+  }, []);
+
+  const disconnectWebSocket = useCallback(() => {
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+    setWsStatus('disconnected');
+    setProcessingStatus('');
+  }, []);
+
+  // Capture and send frame function
+  const captureAndSendFrame = useCallback(() => {
+    if (webcamRef.current && wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      try {
+        const imageSrc = webcamRef.current.getScreenshot();
+        if (imageSrc) {
+          const message = {
+            type: 'gait_analysis',
+            image: imageSrc,
+            timestamp: new Date().toISOString(),
+            user_id: user?.id || 'anonymous'
+          };
+          
+          wsRef.current.send(JSON.stringify(message));
+          setFrameCount(prev => prev + 1);
+        }
+      } catch (error) {
+        console.error('Error capturing/sending frame:', error);
+        setProcessingStatus('Error capturing frame');
+      }
+    }
+  }, [user?.id]);
+
+  // Start/stop monitoring with frame streaming
+  const toggleMonitoring = useCallback(() => {
+    if (!isMonitoring) {
+      // Start monitoring
+      connectWebSocket();
+      setIsMonitoring(true);
+      setFrameCount(0);
+      
+      // Start frame capture interval (every 500ms = 2 FPS)
+      intervalRef.current = setInterval(() => {
+        captureAndSendFrame();
+      }, 500);
+      
+    } else {
+      // Stop monitoring
+      setIsMonitoring(false);
+      
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      
+      disconnectWebSocket();
+    }
+  }, [isMonitoring, connectWebSocket, disconnectWebSocket, captureAndSendFrame]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      disconnectWebSocket();
+    };
+  }, [disconnectWebSocket]);
+
+  const WebcamComponent = () => (
+    <div className="relative w-full h-full">
+      <Webcam
+        ref={webcamRef}
+        className="w-full h-full object-cover rounded-xl"
+        screenshotFormat="image/jpeg"
+        videoConstraints={{
+          width: 640,
+          height: 480,
+          facingMode: "user"
+        }}
+      />
+      
+      {/* Overlay with status information */}
+      <div className="absolute top-4 left-4 bg-black/50 rounded-lg p-2 text-white text-sm">
+        <div className="flex items-center space-x-2 mb-1">
+          <div className={`w-2 h-2 rounded-full ${
+            wsStatus === 'connected' ? 'bg-green-500' : 
+            wsStatus === 'error' ? 'bg-red-500' : 'bg-yellow-500'
+          }`}></div>
+          <span>AI Server: {wsStatus}</span>
+        </div>
+        <div>Frames sent: {frameCount}</div>
+        {processingStatus && (
+          <div className="text-xs text-gray-300 mt-1">{processingStatus}</div>
+        )}
+      </div>
+      
+      {/* Recording indicator */}
+      {isMonitoring && (
+        <div className="absolute top-4 right-4 flex items-center space-x-2 bg-red-500/80 rounded-full px-3 py-1">
+          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+          <span className="text-white text-sm font-medium">RECORDING</span>
+        </div>
+      )}
+    </div>
+  );
 
 
   // Show loading while Clerk loads
@@ -74,7 +233,7 @@ const GaitGuardDashboard = () => {
     { id: 3, type: 'success', message: 'Baseline calibration completed', time: '3 days ago' }
   ];
 
-  const getAlertColor = (type) => {
+  const getAlertColor = (type: string) => {
     switch (type) {
       case 'warning': return 'border-yellow-500 bg-yellow-500/10';
       case 'info': return 'border-blue-500 bg-blue-500/10';
@@ -83,7 +242,7 @@ const GaitGuardDashboard = () => {
     }
   };
 
-  const getAlertIcon = (type) => {
+  const getAlertIcon = (type: string) => {
     switch (type) {
       case 'warning': return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
       case 'info': return <Bell className="w-5 h-5 text-blue-500" />;
@@ -239,7 +398,7 @@ const GaitGuardDashboard = () => {
 
                 <div className="flex items-center justify-center space-x-4">
                   <button
-                    onClick={() => setIsMonitoring(!isMonitoring)}
+                    onClick={toggleMonitoring}
                     className={`flex items-center space-x-2 px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 ${
                       isMonitoring 
                         ? 'bg-red-500 hover:bg-red-600 text-white' 
@@ -265,17 +424,29 @@ const GaitGuardDashboard = () => {
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Gait Speed</span>
-                      <span className="text-white font-semibold">1.05 m/s</span>
+                      <span className="text-gray-400">WebSocket</span>
+                      <span className={`font-semibold ${
+                        wsStatus === 'connected' ? 'text-green-400' :
+                        wsStatus === 'error' ? 'text-red-400' : 'text-yellow-400'
+                      }`}>
+                        {wsStatus.charAt(0).toUpperCase() + wsStatus.slice(1)}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Stride Length</span>
-                      <span className="text-white font-semibold">0.61 m</span>
+                      <span className="text-gray-400">Frames Sent</span>
+                      <span className="text-white font-semibold">{frameCount}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Balance Score</span>
-                      <span className="text-yellow-400 font-semibold">72%</span>
+                      <span className="text-gray-400">Processing</span>
+                      <span className={`font-semibold ${isMonitoring ? 'text-green-400' : 'text-gray-400'}`}>
+                        {isMonitoring ? 'Active' : 'Inactive'}
+                      </span>
                     </div>
+                    {processingStatus && (
+                      <div className="text-xs text-gray-300 mt-2 p-2 bg-slate-700/50 rounded">
+                        {processingStatus}
+                      </div>
+                    )}
                   </div>
                 </div>
 
