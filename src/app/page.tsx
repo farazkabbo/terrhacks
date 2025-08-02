@@ -1,10 +1,13 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { Camera, Shield, Activity, Brain, Users, CheckCircle, ArrowRight, Play, Star, Menu, X } from 'lucide-react';
+import { useUser, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import Link from 'next/link';
 
 const GaitGuardLanding = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user } = useUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -71,9 +74,29 @@ const GaitGuardLanding = () => {
               <a href="#features" className="text-gray-300 hover:text-white transition-colors">Features</a>
               <a href="#how-it-works" className="text-gray-300 hover:text-white transition-colors">How It Works</a>
               <a href="#testimonials" className="text-gray-300 hover:text-white transition-colors">Testimonials</a>
-              <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105">
-                Get Started
-              </button>
+              
+              <SignedOut>
+                <Link href="/sign-up">
+                  <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105">
+                    Get Started
+                  </button>
+                </Link>
+              </SignedOut>
+              
+              <SignedIn>
+                <Link href="/dashboard">
+                  <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105">
+                    Dashboard
+                  </button>
+                </Link>
+                <UserButton 
+                  appearance={{
+                    elements: {
+                      avatarBox: "w-10 h-10"
+                    }
+                  }}
+                />
+              </SignedIn>
             </div>
 
             <button 
@@ -92,9 +115,25 @@ const GaitGuardLanding = () => {
               <a href="#features" className="block text-gray-300 hover:text-white transition-colors">Features</a>
               <a href="#how-it-works" className="block text-gray-300 hover:text-white transition-colors">How It Works</a>
               <a href="#testimonials" className="block text-gray-300 hover:text-white transition-colors">Testimonials</a>
-              <button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full hover:from-purple-600 hover:to-pink-600 transition-all">
-                Get Started
-              </button>
+              
+              <SignedOut>
+                <Link href="/sign-up" className="block">
+                  <button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full hover:from-purple-600 hover:to-pink-600 transition-all">
+                    Get Started
+                  </button>
+                </Link>
+              </SignedOut>
+              
+              <SignedIn>
+                <Link href="/dashboard" className="block">
+                  <button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full hover:from-purple-600 hover:to-pink-600 transition-all">
+                    Dashboard
+                  </button>
+                </Link>
+                <div className="flex justify-center pt-2">
+                  <UserButton />
+                </div>
+              </SignedIn>
             </div>
           </div>
         )}
@@ -114,10 +153,24 @@ const GaitGuardLanding = () => {
                 GaitGuard AI monitors walking patterns through your webcam, using advanced AI to detect early signs of Parkinson's and Alzheimer's disease for timely intervention.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 flex items-center justify-center space-x-2">
-                  <span>Start Free Trial</span>
-                  <ArrowRight className="w-5 h-5" />
-                </button>
+                <SignedOut>
+                  <Link href="/sign-up">
+                    <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 flex items-center justify-center space-x-2">
+                      <span>Start Free Trial</span>
+                      <ArrowRight className="w-5 h-5" />
+                    </button>
+                  </Link>
+                </SignedOut>
+                
+                <SignedIn>
+                  <Link href="/dashboard">
+                    <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 flex items-center justify-center space-x-2">
+                      <span>Go to Dashboard</span>
+                      <ArrowRight className="w-5 h-5" />
+                    </button>
+                  </Link>
+                </SignedIn>
+                
                 <button className="border-2 border-purple-500 text-purple-400 px-8 py-4 rounded-full text-lg font-semibold hover:bg-purple-500 hover:text-white transition-all flex items-center justify-center space-x-2">
                   <Play className="w-5 h-5" />
                   <span>Watch Demo</span>
@@ -261,10 +314,24 @@ const GaitGuardLanding = () => {
           <p className="text-xl text-purple-100 mb-8">
             Join thousands of families using GaitGuard AI for early detection and peace of mind
           </p>
-          <button className="bg-white text-purple-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 flex items-center justify-center space-x-2 mx-auto">
-            <span>Get Started Free</span>
-            <ArrowRight className="w-5 h-5" />
-          </button>
+          
+          <SignedOut>
+            <Link href="/sign-up">
+              <button className="bg-white text-purple-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 flex items-center justify-center space-x-2 mx-auto">
+                <span>Get Started Free</span>
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </Link>
+          </SignedOut>
+          
+          <SignedIn>
+            <Link href="/dashboard">
+              <button className="bg-white text-purple-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 flex items-center justify-center space-x-2 mx-auto">
+                <span>Go to Dashboard</span>
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </Link>
+          </SignedIn>
         </div>
       </section>
 
