@@ -166,7 +166,7 @@ options = vision.PoseLandmarkerOptions(
 detector = vision.PoseLandmarker.create_from_options(options)
 
 # Open the default camera
-cam = cv2.VideoCapture('regular.mp4')
+cam = cv2.VideoCapture(0)
 
 # Get the default frame width and height
 frame_width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
