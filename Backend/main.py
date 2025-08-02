@@ -97,6 +97,7 @@ def getPeakDist(lengths):
     
     return average_peak_distance
 
+
 def process_gait_analysis(frame, detection_result, fast_mode=False):
     """Process gait analysis and return annotated frame with metrics"""
     global frame_count, swingLens, strideLens
@@ -245,6 +246,18 @@ async def websocket_image(websocket: WebSocket):
                     
                     print(f"Frame {frame_count} processed: {width}x{height}")
                     
+                    # Pair swing and stride data into objects for the last 50 measurements
+                    past_metrics_paired = []
+                    swing_data = swingLens[-50:]
+                    stride_data = strideLens[-50:]
+                    min_length = min(len(swing_data), len(stride_data))
+                    
+                    for i in range(min_length):
+                        past_metrics_paired.append({
+                            "swing_length": swing_data[i],
+                            "stride_length": stride_data[i]
+                        })
+
                     # Send processed image and metrics back to frontend
                     response = {
                         "status": "success",
@@ -252,6 +265,7 @@ async def websocket_image(websocket: WebSocket):
                         "processed_image": processed_data_url,
                         "dimensions": {"width": width, "height": height},
                         "gait_metrics": gait_metrics,
+                        "past_metrics": past_metrics_paired,
                         "frame_count": frame_count
                     }
                     

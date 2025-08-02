@@ -43,6 +43,9 @@ const GaitGuardDashboard = () => {
   const lastFrameTime = useRef<number>(0);
   const processingQueue = useRef<number>(0);
 
+/* @ts-ignore */
+  const [gaitData, setGaitData] = useState<any[]>([]);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -81,6 +84,12 @@ const GaitGuardDashboard = () => {
             // Update gait metrics if available
             if (response.gait_metrics) {
               setGaitMetrics(response.gait_metrics);
+            }
+
+            if(response.past_metrics){
+              console.log("GETTING PAST METRICS!")
+              /* @ts-ignore */
+              setGaitData(response.past_metrics.map((e, i) => ({ ...e, date: i })))
             }
           } else if (response.status === 'error') {
             setProcessingStatus(`Error: ${response.message}`);
@@ -304,17 +313,6 @@ const GaitGuardDashboard = () => {
       </div>
     );
   }
-
-  // Mock data for charts
-  const gaitData = [
-    { date: '2025-01-25', strideLength: 0.68, gaitSpeed: 1.2, balance: 0.85 },
-    { date: '2025-01-26', strideLength: 0.66, gaitSpeed: 1.15, balance: 0.82 },
-    { date: '2025-01-27', strideLength: 0.65, gaitSpeed: 1.18, balance: 0.83 },
-    { date: '2025-01-28', strideLength: 0.63, gaitSpeed: 1.1, balance: 0.78 },
-    { date: '2025-01-29', strideLength: 0.62, gaitSpeed: 1.05, balance: 0.75 },
-    { date: '2025-01-30', strideLength: 0.61, gaitSpeed: 1.0, balance: 0.72 },
-    { date: '2025-01-31', strideLength: 0.59, gaitSpeed: 0.95, balance: 0.68 }
-  ];
 
   const riskData = [
     { category: 'Parkinson\'s', risk: 25, color: 'bg-yellow-500' },
@@ -621,7 +619,7 @@ const GaitGuardDashboard = () => {
                 </div>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={gaitData}>
+                    <LineChart data={gaitData.slice(-50)} key={gaitData.length} >
                       <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                       <XAxis dataKey="date" stroke="#9CA3AF" />
                       <YAxis stroke="#9CA3AF" />
@@ -635,20 +633,25 @@ const GaitGuardDashboard = () => {
                       />
                       <Line
                         type="monotone"
-                        dataKey="strideLength"
+                        dataKey="stride_length"
                         stroke="#8B5CF6"
                         strokeWidth={3}
                         dot={{ fill: '#8B5CF6' }}
                         name="Stride Length (m)"
-                      />
+                       isAnimationActive={false}
+                       dot={false}
+                       />
+                       {/* @ts-ignore */}
                       <Line
                         type="monotone"
-                        dataKey="gaitSpeed"
+                        dataKey="swing_length"
                         stroke="#EC4899"
                         strokeWidth={3}
                         dot={{ fill: '#EC4899' }}
                         name="Gait Speed (m/s)"
-                      />
+                       isAnimationActive={false}
+                       dot={false}
+                       />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
