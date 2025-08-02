@@ -31,11 +31,17 @@ const GaitGuardDashboard = () => {
   const [wsStatus, setWsStatus] = useState('disconnected');
   const [frameCount, setFrameCount] = useState(0);
   const [processingStatus, setProcessingStatus] = useState('');
+  const [processedImage, setProcessedImage] = useState<string | null>(null);
+  const [gaitMetrics, setGaitMetrics] = useState<any>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [droppedFrames, setDroppedFrames] = useState(0);
   const { user, isLoaded } = useUser();
   
   const webcamRef = useRef<Webcam>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const lastFrameTime = useRef<number>(0);
+  const processingQueue = useRef<number>(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -60,13 +66,29 @@ const GaitGuardDashboard = () => {
           const response = JSON.parse(event.data);
           console.log('Server response:', response);
           
+          // Decrease processing queue count
+          processingQueue.current = Math.max(0, processingQueue.current - 1);
+          setIsProcessing(processingQueue.current > 0);
+          
           if (response.status === 'success') {
-            setProcessingStatus(`Frame processed: ${response.dimensions?.width}x${response.dimensions?.height}`);
+            setProcessingStatus(`Frame ${response.frame_count}: ${response.dimensions?.width}x${response.dimensions?.height} (Queue: ${processingQueue.current})`);
+            
+            // Update processed image if available
+            if (response.processed_image) {
+              setProcessedImage(response.processed_image);
+            }
+            
+            // Update gait metrics if available
+            if (response.gait_metrics) {
+              setGaitMetrics(response.gait_metrics);
+            }
           } else if (response.status === 'error') {
             setProcessingStatus(`Error: ${response.message}`);
           }
         } catch (error) {
           console.log('Raw server message:', event.data);
+          processingQueue.current = Math.max(0, processingQueue.current - 1);
+          setIsProcessing(processingQueue.current > 0);
           setProcessingStatus('Frame processed successfully');
         }
       };
@@ -75,6 +97,11 @@ const GaitGuardDashboard = () => {
         console.log('WebSocket disconnected');
         setWsStatus('disconnected');
         setProcessingStatus('Disconnected from AI server');
+        setProcessedImage(null);
+        setGaitMetrics(null);
+        setIsProcessing(false);
+        setDroppedFrames(0);
+        processingQueue.current = 0;
       };
       
       ws.onerror = (error) => {
@@ -98,30 +125,58 @@ const GaitGuardDashboard = () => {
     }
     setWsStatus('disconnected');
     setProcessingStatus('');
+    setProcessedImage(null);
+    setGaitMetrics(null);
+    setIsProcessing(false);
+    setDroppedFrames(0);
+    processingQueue.current = 0;
   }, []);
 
-  // Capture and send frame function
+  // Capture and send frame function with smart throttling
   const captureAndSendFrame = useCallback(() => {
     if (webcamRef.current && wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      const now = Date.now();
+      
+      // Skip frame if backend is too busy (more than 3 frames in queue)
+      if (processingQueue.current > 3) {
+        setDroppedFrames(prev => prev + 1);
+        console.log(`Frame dropped - queue too full (${processingQueue.current})`);
+        return;
+      }
+      
+      // Throttle to max 30 FPS when processing queue is building up
+      const minInterval = processingQueue.current > 1 ? 33 : 50; // 30 FPS or 20 FPS
+      if (now - lastFrameTime.current < minInterval) {
+        return;
+      }
+      
       try {
-        const imageSrc = webcamRef.current.getScreenshot();
+        const imageSrc = webcamRef.current.getScreenshot({
+          width: 640,
+          height: 480
+        });
+        
         if (imageSrc) {
           const message = {
             type: 'gait_analysis',
             image: imageSrc,
             timestamp: new Date().toISOString(),
-            user_id: user?.id || 'anonymous'
+            user_id: user?.id || 'anonymous',
+            frame_id: frameCount // Add frame ID for tracking
           };
           
           wsRef.current.send(JSON.stringify(message));
           setFrameCount(prev => prev + 1);
+          lastFrameTime.current = now;
+          processingQueue.current += 1;
+          setIsProcessing(true);
         }
       } catch (error) {
         console.error('Error capturing/sending frame:', error);
         setProcessingStatus('Error capturing frame');
       }
     }
-  }, [user?.id]);
+  }, [user?.id, frameCount]);
 
   // Start/stop monitoring with frame streaming
   const toggleMonitoring = useCallback(() => {
@@ -131,10 +186,10 @@ const GaitGuardDashboard = () => {
       setIsMonitoring(true);
       setFrameCount(0);
       
-      // Start frame capture interval (every 500ms = 2 FPS)
+      // Start frame capture interval (every 50ms = 20 FPS, with smart throttling)
       intervalRef.current = setInterval(() => {
         captureAndSendFrame();
-      }, 20);
+      }, 50);
       
     } else {
       // Stop monitoring
@@ -182,6 +237,10 @@ const GaitGuardDashboard = () => {
           <span>AI Server: {wsStatus}</span>
         </div>
         <div>Frames sent: {frameCount}</div>
+        <div>Queue: {processingQueue.current}</div>
+        {droppedFrames > 0 && (
+          <div className="text-orange-300">Dropped: {droppedFrames}</div>
+        )}
         {processingStatus && (
           <div className="text-xs text-gray-300 mt-1">{processingStatus}</div>
         )}
@@ -192,6 +251,42 @@ const GaitGuardDashboard = () => {
         <div className="absolute top-4 right-4 flex items-center space-x-2 bg-red-500/80 rounded-full px-3 py-1">
           <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
           <span className="text-white text-sm font-medium">RECORDING</span>
+        </div>
+      )}
+    </div>
+  );
+
+  const ProcessedImageComponent = () => (
+    <div className="relative w-full h-full">
+      {processedImage ? (
+        <img 
+          src={processedImage} 
+          alt="Processed with landmarks" 
+          className="w-full h-full object-cover rounded-xl"
+        />
+      ) : (
+        <div className="w-full h-full bg-slate-900/50 rounded-xl flex items-center justify-center border border-purple-500/20">
+          <div className="text-center">
+            <Brain className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+            <p className="text-gray-400">AI Processing View</p>
+            <p className="text-gray-500 text-sm mt-2">Landmarks will appear here</p>
+          </div>
+        </div>
+      )}
+      
+      {/* Gait metrics overlay */}
+      {gaitMetrics && (
+        <div className="absolute bottom-4 left-4 bg-black/70 rounded-lg p-3 text-white text-sm">
+          <div className="mb-2 text-green-400 font-semibold">Gait Analysis</div>
+          {gaitMetrics.avg_stride && (
+            <div>Avg Stride: {Math.round(gaitMetrics.avg_stride)}px</div>
+          )}
+          {gaitMetrics.avg_swing && (
+            <div>Avg Swing: {Math.round(gaitMetrics.avg_swing)}px</div>
+          )}
+          <div className="text-xs text-gray-300 mt-1">
+            Frame: {gaitMetrics.frame_count}
+          </div>
         </div>
       )}
     </div>
@@ -384,16 +479,36 @@ const GaitGuardDashboard = () => {
                   </div>
                 </div>
 
-                <div className="aspect-video bg-slate-900/50 rounded-xl mb-6 flex items-center justify-center border border-purple-500/20">
-                  {isMonitoring ? (
-                    WebcamComponent() // Render Webcam component when monitoring is active
-                  ) : (
-                    <div className="text-center">
-                      <Camera className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-                      <p className="text-gray-400">Click start to begin monitoring</p>
-                      <p className="text-gray-500 text-sm mt-2">Signed in as {user?.firstName || user?.emailAddresses[0]?.emailAddress}</p>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                  {/* Input Webcam */}
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold text-white">Camera Input</h3>
+                    <div className="aspect-video bg-slate-900/50 rounded-xl flex items-center justify-center border border-purple-500/20">
+                      {isMonitoring ? (
+                        WebcamComponent()
+                      ) : (
+                        <div className="text-center">
+                          <Camera className="w-12 h-12 text-gray-500 mx-auto mb-2" />
+                          <p className="text-gray-400 text-sm">Input Camera</p>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
+                  
+                  {/* Processed Output */}
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold text-white">AI Analysis</h3>
+                    <div className="aspect-video bg-slate-900/50 rounded-xl flex items-center justify-center border border-purple-500/20">
+                      {isMonitoring ? (
+                        ProcessedImageComponent()
+                      ) : (
+                        <div className="text-center">
+                          <Brain className="w-12 h-12 text-gray-500 mx-auto mb-2" />
+                          <p className="text-gray-400 text-sm">Processed Output</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex items-center justify-center space-x-4">
@@ -422,32 +537,47 @@ const GaitGuardDashboard = () => {
                     <Heart className="w-6 h-6 text-red-400" />
                     <h3 className="text-lg font-semibold text-white">Current Status</h3>
                   </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">WebSocket</span>
-                      <span className={`font-semibold ${
-                        wsStatus === 'connected' ? 'text-green-400' :
-                        wsStatus === 'error' ? 'text-red-400' : 'text-yellow-400'
-                      }`}>
-                        {wsStatus.charAt(0).toUpperCase() + wsStatus.slice(1)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Frames Sent</span>
-                      <span className="text-white font-semibold">{frameCount}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Processing</span>
-                      <span className={`font-semibold ${isMonitoring ? 'text-green-400' : 'text-gray-400'}`}>
-                        {isMonitoring ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
-                    {processingStatus && (
-                      <div className="text-xs text-gray-300 mt-2 p-2 bg-slate-700/50 rounded">
-                        {processingStatus}
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">WebSocket</span>
+                        <span className={`font-semibold ${
+                          wsStatus === 'connected' ? 'text-green-400' :
+                          wsStatus === 'error' ? 'text-red-400' : 'text-yellow-400'
+                        }`}>
+                          {wsStatus.charAt(0).toUpperCase() + wsStatus.slice(1)}
+                        </span>
                       </div>
-                    )}
-                  </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Frames Sent</span>
+                        <span className="text-white font-semibold">{frameCount}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Queue Size</span>
+                        <span className={`font-semibold ${
+                          processingQueue.current > 3 ? 'text-red-400' : 
+                          processingQueue.current > 1 ? 'text-yellow-400' : 'text-green-400'
+                        }`}>
+                          {processingQueue.current}
+                        </span>
+                      </div>
+                      {droppedFrames > 0 && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Dropped</span>
+                          <span className="text-orange-400 font-semibold">{droppedFrames}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Processing</span>
+                        <span className={`font-semibold ${isMonitoring ? 'text-green-400' : 'text-gray-400'}`}>
+                          {isMonitoring ? (isProcessing ? 'Active' : 'Ready') : 'Inactive'}
+                        </span>
+                      </div>
+                      {processingStatus && (
+                        <div className="text-xs text-gray-300 mt-2 p-2 bg-slate-700/50 rounded">
+                          {processingStatus}
+                        </div>
+                      )}
+                    </div>
                 </div>
 
                 <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20">

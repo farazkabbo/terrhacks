@@ -5,6 +5,7 @@ import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 import math
+import base64
 
 import matplotlib.pyplot as plt
 from collections import deque
@@ -166,7 +167,7 @@ options = vision.PoseLandmarkerOptions(
 detector = vision.PoseLandmarker.create_from_options(options)
 
 # Open the default camera
-cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture("regular.mp4")  # Change to 0 for webcam
 
 # Get the default frame width and height
 frame_width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -188,6 +189,7 @@ frame_count = 0
 from scipy.signal import find_peaks
 
 def getPeakDist(lengths):
+    print(lengths)
     window_size = 10
     smooth = np.convolve(lengths, np.ones(window_size)/window_size, mode='same')
     peaks, properties = find_peaks(smooth,
@@ -255,6 +257,11 @@ while True:
 
         # Draw landmarks on the frame
     annotated_image = draw_landmarks_on_image(image.numpy_view(), detection_result)
+
+    # Convert annotated image to BGR for OpenCV display
+    labelledResult = cv2.cvtColor(annotated_image, cv2.COLOR_RGB2BGR)
+    base64string = base64.b64encode(cv2.imencode('.jpg', labelledResult)[1]).decode()
+    
     cv2.imshow('result', cv2.cvtColor(annotated_image, cv2.COLOR_RGB2BGR))
 
     cv2.imshow('Camera', frame)
