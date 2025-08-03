@@ -1,6 +1,6 @@
 # 🚶‍♂️ **NeuroGait** 🚶‍♀️
 
-![Placeholder Image](https://via.placeholder.com/800x300?text=NeuroGait+Demo+Image)
+![Placeholder Image](https://imgur.com/a/iwjKp7A)
 
 ---
 
