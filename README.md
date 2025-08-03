@@ -6,6 +6,7 @@
 ## How we built it
 
 ## Challenges we ran into
+Throughout the development process, we encountered several technical challenges, particularly in implementing the real-time chart display. One of the primary issues involved ensuring continuous data updates on the chart. Initially, the chart failed to render dynamic updates due to redundant logic and poorly defined conditional statements within our update algorithm. Through systematic debugging and code optimization, we corrected these issues and enabled the chart to reflect live data streams accurately. Additionally, we faced challenges in integrating the back-end data stream with the React-based front-end. The graph was not accurately representing user motion captured by the camera. Upon investigation, we identified that the visualization was based on averaged values rather than raw sensor data, leading to a loss of fidelity and a disconnect between actual motion and displayed results. By modifying the data processing pipeline to transmit raw, time sensitive values, we restored the accuracy of the real time graph and ensured it responded correctly to movement.
 
 
 ## Accomplishments that we're proud of
