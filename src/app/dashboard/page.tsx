@@ -667,18 +667,22 @@ const GaitGuardDashboard = () => {
     <SignedIn>
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         {/* Header */}
-        <header className="bg-slate-800/50 backdrop-blur-md border-b border-purple-500/20 px-6 py-4">
+        <header className="bg-slate-800/60 backdrop-blur-md border-b border-purple-500/30 px-6 py-4 shadow-lg shadow-purple-500/10">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                  <Activity className="w-6 h-6 text-white" />
+              <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-all duration-300 hover:scale-105">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 via-violet-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/25 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+                  <Activity className="w-7 h-7 text-white relative z-10" />
                 </div>
-                <span className="text-xl font-bold text-white hidden sm:block">NeuroGait</span>
+                <span className="text-xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent hidden sm:block">NeuroGait</span>
               </Link>
-              <div className="border-l border-gray-600 pl-4">
-                <h1 className="text-xl sm:text-2xl font-bold text-white">Dashboard</h1>
-                <p className="text-gray-400 text-sm">{currentTime.toLocaleDateString()} - {currentTime.toLocaleTimeString()}</p>
+              <div className="border-l border-purple-500/30 pl-4">
+                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">Dashboard</h1>
+                <p className="text-gray-400 text-sm flex items-center space-x-1">
+                  <Clock className="w-3 h-3" />
+                  <span>{currentTime.toLocaleDateString()} - {currentTime.toLocaleTimeString()}</span>
+                </p>
               </div>
             </div>
             
@@ -686,23 +690,25 @@ const GaitGuardDashboard = () => {
               {/* Welcome message */}
               <div className="hidden md:block text-right">
                 <p className="text-gray-300 text-sm">Welcome back,</p>
-                <p className="text-white font-semibold">{user?.firstName || user?.emailAddresses[0]?.emailAddress}</p>
+                <p className="text-white font-semibold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">{user?.firstName || user?.emailAddresses[0]?.emailAddress}</p>
               </div>
               
-              <button className="p-2 text-gray-400 hover:text-white transition-colors relative">
+              <button className="p-3 text-gray-400 hover:text-white transition-all duration-300 relative group hover:bg-purple-500/10 rounded-xl">
                 <Bell className="w-5 h-5" />
                 {(() => {
                   const highPriorityAlerts = alerts.filter(alert => alert.type === 'error' || alert.type === 'warning');
                   const hasHighPriority = highPriorityAlerts.length > 0;
                   return (
-                    <span className={`absolute -top-1 -right-1 w-3 h-3 rounded-full ${
-                      hasHighPriority ? 'bg-red-500 animate-pulse' : 'bg-blue-500'
-                    }`}></span>
+                    <span className={`absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold ${
+                      hasHighPriority ? 'bg-gradient-to-r from-red-500 to-red-600 text-white animate-pulse shadow-lg shadow-red-500/50' : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/50'
+                    }`}>
+                      {alerts.length}
+                    </span>
                   );
                 })()}
               </button>
               
-              <button className="p-2 text-gray-400 hover:text-white transition-colors">
+              <button className="p-3 text-gray-400 hover:text-white transition-all duration-300 hover:bg-purple-500/10 rounded-xl">
                 <Settings className="w-5 h-5" />
               </button>
               
@@ -727,55 +733,65 @@ const GaitGuardDashboard = () => {
 
         <div className="flex">
           {/* Sidebar */}
-          <aside className="w-64 bg-slate-800/30 backdrop-blur-sm border-r border-purple-500/20 p-6 space-y-6">
-            <nav className="space-y-2">
-              <a href="#" className="flex items-center space-x-3 text-white bg-purple-500/20 rounded-lg px-3 py-2">
+          <aside className="w-64 bg-slate-800/40 backdrop-blur-sm border-r border-purple-500/30 p-6 space-y-6 shadow-2xl">
+            <nav className="space-y-3">
+              <a href="#" className="flex items-center space-x-3 text-white bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-xl px-4 py-3 shadow-lg shadow-purple-500/20 border border-purple-500/30">
                 <Activity className="w-5 h-5" />
-                <span>Dashboard</span>
+                <span className="font-semibold">Dashboard</span>
               </a>
-              <a href="#" className="flex items-center space-x-3 text-gray-400 hover:text-white hover:bg-slate-700/50 rounded-lg px-3 py-2 transition-colors">
-                <Camera className="w-5 h-5" />
+              <a href="#" className="flex items-center space-x-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-slate-700/50 hover:to-slate-600/50 rounded-xl px-4 py-3 transition-all duration-300 group">
+                <Camera className="w-5 h-5 group-hover:text-purple-400 transition-colors" />
                 <span>Live Monitoring</span>
               </a>
-              <a href="#" className="flex items-center space-x-3 text-gray-400 hover:text-white hover:bg-slate-700/50 rounded-lg px-3 py-2 transition-colors">
-                <TrendingUp className="w-5 h-5" />
+              <a href="#" className="flex items-center space-x-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-slate-700/50 hover:to-slate-600/50 rounded-xl px-4 py-3 transition-all duration-300 group">
+                <TrendingUp className="w-5 h-5 group-hover:text-green-400 transition-colors" />
                 <span>Reports</span>
               </a>
-              <a href="#" className="flex items-center space-x-3 text-gray-400 hover:text-white hover:bg-slate-700/50 rounded-lg px-3 py-2 transition-colors">
-                <Calendar className="w-5 h-5" />
+              <a href="#" className="flex items-center space-x-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-slate-700/50 hover:to-slate-600/50 rounded-xl px-4 py-3 transition-all duration-300 group">
+                <Calendar className="w-5 h-5 group-hover:text-blue-400 transition-colors" />
                 <span>History</span>
               </a>
-              <a href="#" className="flex items-center space-x-3 text-gray-400 hover:text-white hover:bg-slate-700/50 rounded-lg px-3 py-2 transition-colors">
-                <Settings className="w-5 h-5" />
+              <a href="#" className="flex items-center space-x-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-slate-700/50 hover:to-slate-600/50 rounded-xl px-4 py-3 transition-all duration-300 group">
+                <Settings className="w-5 h-5 group-hover:text-orange-400 transition-colors" />
                 <span>Settings</span>
               </a>
             </nav>
 
             {/* User Info Card */}
-            <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl p-4 border border-purple-500/30">
-              <div className="flex items-center space-x-3 mb-3">
+            <div className="bg-gradient-to-br from-purple-500/20 via-violet-500/10 to-pink-500/20 rounded-2xl p-5 border border-purple-500/40 shadow-xl shadow-purple-500/10 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
+              <div className="flex items-center space-x-3 mb-4 relative z-10">
                 <UserButton 
                   appearance={{
                     elements: {
-                      avatarBox: "w-10 h-10"
+                      avatarBox: "w-12 h-12 ring-2 ring-purple-400/50 shadow-lg"
                     }
                   }}
                 />
                 <div>
                   <h4 className="text-white font-semibold text-sm">{user?.firstName || 'User'}</h4>
+                  <p className="text-purple-200 text-xs">Active Session</p>
                 </div>
               </div>
               <SignOutButton>
-                <button className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors text-sm">
-                  <LogOut className="w-4 h-4" />
+                <button className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-300 text-sm bg-slate-700/30 hover:bg-slate-600/50 rounded-lg px-3 py-2 w-full justify-center group">
+                  <LogOut className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   <span>Sign Out</span>
                 </button>
               </SignOutButton>
             </div>
 
-            <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl p-4 border border-purple-500/30">
-              <h3 className="text-white font-semibold mb-2">Quick Tip</h3>
-              <p className="text-gray-300 text-sm">Maintain consistent monitoring for the most accurate baseline.</p>
+            <div className="bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-indigo-500/10 rounded-2xl p-5 border border-cyan-500/30 shadow-xl shadow-cyan-500/10 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
+              <div className="relative z-10">
+                <div className="flex items-center space-x-2 mb-3">
+                  <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center">
+                    <Brain className="w-4 h-4 text-white" />
+                  </div>
+                  <h3 className="text-white font-semibold text-sm">Pro Tip</h3>
+                </div>
+                <p className="text-gray-300 text-sm leading-relaxed">Maintain consistent monitoring for the most accurate baseline and early detection.</p>
+              </div>
             </div>
           </aside>
 
@@ -784,59 +800,84 @@ const GaitGuardDashboard = () => {
             {/* Welcome + Metrics Section in one line */}
             <div className="grid grid-cols-4 gap-6 mb-6">
               {/* Welcome Section - spans 3 columns */}
-              <div className="col-span-3 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-purple-500/20 flex flex-col items-center justify-center text-center">
-                <h2 className="text-3xl font-extrabold text-white mb-3 tracking-tight">
-                  Welcome back, {user?.firstName || user?.emailAddresses[0]?.emailAddress?.split('@')[0]}!
-                </h2>
-                <p className="text-lg text-gray-300 max-w-xl">
-                  Your gait monitoring system is ready.<br />
-                  Let's keep track of your health metrics and stay proactive.
-                </p>
+              <div className="col-span-3 bg-gradient-to-br from-purple-500/15 via-violet-500/10 to-pink-500/15 rounded-3xl p-8 border border-purple-500/30 shadow-2xl shadow-purple-500/10 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-500/20 via-transparent to-transparent"></div>
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-pink-500/20 to-purple-500/20 rounded-full blur-3xl"></div>
+                <div className="relative z-10 flex flex-col items-center justify-center text-center h-full">
+                  <div className="mb-4">
+                    <div className="w-20 h-20 bg-gradient-to-br from-purple-400 via-violet-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-purple-500/30 mx-auto mb-4 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+                      <Activity className="w-10 h-10 text-white relative z-10" />
+                    </div>
+                  </div>
+                  <h2 className="text-4xl font-extrabold bg-gradient-to-r from-white via-purple-100 to-pink-100 bg-clip-text text-transparent mb-4 tracking-tight">
+                    Welcome back, {user?.firstName || user?.emailAddresses[0]?.emailAddress?.split('@')[0]}!
+                  </h2>
+                  <p className="text-lg text-gray-300 max-w-2xl leading-relaxed">
+                    Your advanced gait monitoring system is ready and operational.<br />
+                    <span className="text-purple-300 font-medium">Let's continue monitoring your neurological health metrics.</span>
+                  </p>
+                  <div className="flex items-center space-x-2 mt-4 text-sm text-purple-300">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span>System Active</span>
+                  </div>
+                </div>
               </div>
               {/* Current Metrics - spans 1 column */}
               <div className="col-span-1 space-y-4 flex flex-col justify-center">
-                <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <Heart className="w-6 h-6 text-red-400" />
-                    <h3 className="text-lg font-semibold text-white">Current Status</h3>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">WebSocket</span>
-                      <span className={`font-semibold ${
-                        wsStatus === 'connected' ? 'text-green-400' :
-                        wsStatus === 'error' ? 'text-red-400' : 'text-yellow-400'
-                      }`}>
-                        {wsStatus.charAt(0).toUpperCase() + wsStatus.slice(1)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Frames Sent</span>
-                      <span className="text-white font-semibold">{frameCount}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Queue Size</span>
-                      <span className={`font-semibold ${
-                        processingQueue.current > 3 ? 'text-red-400' : 
-                        processingQueue.current > 1 ? 'text-yellow-400' : 'text-green-400'
-                      }`}>
-                        {processingQueue.current}
-                      </span>
-                    </div>
-                    {droppedFrames > 0 && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Dropped</span>
-                        <span className="text-orange-400 font-semibold">{droppedFrames}</span>
+                <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/30 shadow-xl shadow-purple-500/10 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
+                  <div className="relative z-10">
+                    <div className="flex items-center space-x-3 mb-6">
+                      <div className="w-10 h-10 bg-gradient-to-r from-red-400 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                        <Heart className="w-5 h-5 text-white" />
                       </div>
-                    )}
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Processing</span>
-                      <span className={`font-semibold ${isMonitoring ? 'text-green-400' : 'text-gray-400'}`}>
-                        {isMonitoring ? (isProcessing ? 'Active' : 'Ready') : 'Inactive'}
-                      </span>
+                      <h3 className="text-lg font-semibold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">System Status</h3>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center p-3 bg-slate-700/30 rounded-xl">
+                        <span className="text-gray-300 text-sm">WebSocket</span>
+                        <div className="flex items-center space-x-2">
+                          <div className={`w-2 h-2 rounded-full ${
+                            wsStatus === 'connected' ? 'bg-emerald-400 shadow-lg shadow-emerald-400/50' :
+                            wsStatus === 'error' ? 'bg-red-400 shadow-lg shadow-red-400/50' : 'bg-amber-400 shadow-lg shadow-amber-400/50'
+                          }`}></div>
+                          <span className={`font-semibold text-sm ${
+                            wsStatus === 'connected' ? 'text-emerald-400' :
+                            wsStatus === 'error' ? 'text-red-400' : 'text-amber-400'
+                          }`}>
+                            {wsStatus.charAt(0).toUpperCase() + wsStatus.slice(1)}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-slate-700/30 rounded-xl">
+                        <span className="text-gray-300 text-sm">Frames Processed</span>
+                        <span className="text-white font-bold text-lg">{frameCount}</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-slate-700/30 rounded-xl">
+                        <span className="text-gray-300 text-sm">Queue</span>
+                        <div className="flex items-center space-x-2">
+                          <div className={`w-2 h-2 rounded-full ${
+                            processingQueue.current > 3 ? 'bg-red-400 animate-pulse' : 
+                            processingQueue.current > 1 ? 'bg-amber-400' : 'bg-emerald-400'
+                          }`}></div>
+                          <span className={`font-semibold text-sm ${
+                            processingQueue.current > 3 ? 'text-red-400' : 
+                            processingQueue.current > 1 ? 'text-amber-400' : 'text-emerald-400'
+                          }`}>
+                            {processingQueue.current}
+                          </span>
+                        </div>
+                      </div>
+                      {droppedFrames > 0 && (
+                        <div className="flex justify-between items-center p-3 bg-orange-500/10 border border-orange-500/20 rounded-xl">
+                          <span className="text-orange-300 text-sm">Dropped Frames</span>
+                          <span className="text-orange-400 font-semibold">{droppedFrames}</span>
+                        </div>
+                      )}
                     </div>
                     {processingStatus && (
-                      <div className="text-xs text-gray-300 mt-2 p-2 bg-slate-700/50 rounded">
+                      <div className="mt-4 text-xs text-gray-400 p-3 bg-slate-800/50 rounded-xl border border-slate-600/30">
                         {processingStatus}
                       </div>
                     )}
@@ -848,164 +889,242 @@ const GaitGuardDashboard = () => {
             {/* Monitoring Status & Quick Actions */}
             <div className="grid lg:grid-cols-3 gap-6">
               {/* Live Status - Made bigger */}
-              <div className="lg:col-span-3 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-white">Live Monitoring</h2>
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-3 h-3 rounded-full ${isMonitoring ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`}></div>
-                    <span className="text-gray-400">{isMonitoring ? 'Active' : 'Inactive'}</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                  {/* Input Webcam */}
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold text-white">Camera Input</h3>
-                    <div className="aspect-[4/3] bg-slate-900/50 rounded-xl flex items-center justify-center border border-purple-500/20">
-                      {isMonitoring ? (
-                        WebcamComponent()
-                      ) : (
-                        <div className="text-center">
-                          <Camera className="w-12 h-12 text-gray-500 mx-auto mb-2" />
-                          <p className="text-gray-400 text-sm">Input Camera</p>
+              <div className="lg:col-span-3 bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-sm rounded-3xl p-8 border border-purple-500/30 shadow-2xl shadow-purple-500/10 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
+                <div className="absolute -top-20 -left-20 w-60 h-60 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg">
+                        <Camera className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">Live Monitoring</h2>
+                        <p className="text-gray-400">Real-time gait analysis and AI processing</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3 bg-slate-700/50 rounded-2xl px-4 py-3 border border-slate-600/30">
+                      <div className={`w-4 h-4 rounded-full ${isMonitoring ? 'bg-emerald-400 animate-pulse shadow-lg shadow-emerald-400/50' : 'bg-gray-500'}`}></div>
+                      <span className={`font-semibold ${isMonitoring ? 'text-emerald-400' : 'text-gray-400'}`}>{isMonitoring ? 'Active' : 'Inactive'}</span>
+                      {isMonitoring && (
+                        <div className="text-xs text-emerald-300 bg-emerald-400/10 px-2 py-1 rounded-full border border-emerald-400/20">
+                          LIVE
                         </div>
                       )}
                     </div>
                   </div>
-                  
-                  {/* Processed Output */}
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold text-white">AI Analysis</h3>
-                    <div className="aspect-[4/3] bg-slate-900/50 rounded-xl flex items-center justify-center border border-purple-500/20">
-                      {isMonitoring ? (
-                        ProcessedImageComponent()
-                      ) : (
-                        <div className="text-center">
-                          <Brain className="w-12 h-12 text-gray-500 mx-auto mb-2" />
-                          <p className="text-gray-400 text-sm">Processed Output</p>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    {/* Input Webcam */}
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-6 h-6 bg-gradient-to-r from-green-400 to-emerald-500 rounded-lg flex items-center justify-center">
+                          <Camera className="w-3 h-3 text-white" />
                         </div>
-                      )}
+                        <h3 className="text-lg font-semibold text-white">Camera Input</h3>
+                      </div>
+                      <div className="aspect-[4/3] bg-gradient-to-br from-slate-900/80 to-slate-800/80 rounded-2xl overflow-hidden border border-purple-500/30 shadow-xl relative">
+                        {isMonitoring ? (
+                          WebcamComponent()
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <div className="text-center">
+                              <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                <Camera className="w-8 h-8 text-gray-400" />
+                              </div>
+                              <p className="text-gray-400 text-sm font-medium">Camera Ready</p>
+                              <p className="text-gray-500 text-xs mt-1">Click start to begin monitoring</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Processed Output */}
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-6 h-6 bg-gradient-to-r from-purple-400 to-pink-500 rounded-lg flex items-center justify-center">
+                          <Brain className="w-3 h-3 text-white" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-white">AI Analysis</h3>
+                      </div>
+                      <div className="aspect-[4/3] bg-gradient-to-br from-slate-900/80 to-slate-800/80 rounded-2xl overflow-hidden border border-purple-500/30 shadow-xl relative">
+                        {isMonitoring ? (
+                          ProcessedImageComponent()
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <div className="text-center">
+                              <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                <Brain className="w-8 h-8 text-white" />
+                              </div>
+                              <p className="text-gray-400 text-sm font-medium">AI Processing View</p>
+                              <p className="text-gray-500 text-xs mt-1">Landmarks and analysis will appear here</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex items-center justify-center space-x-4">
-                  <button
-                    onClick={toggleMonitoring}
-                    className={`flex items-center space-x-2 px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 ${
-                      isMonitoring 
-                        ? 'bg-red-500 hover:bg-red-600 text-white' 
-                        : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white'
-                    }`}
-                  >
-                    {isMonitoring ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                    <span>{isMonitoring ? 'Stop' : 'Start'} Monitoring</span>
-                  </button>
-                  <button className="flex items-center space-x-2 px-6 py-3 rounded-full border border-purple-500 text-purple-400 hover:bg-purple-500 hover:text-white transition-all">
-                    <RefreshCw className="w-5 h-5" />
-                    <span>Calibrate</span>
-                  </button>
+                  <div className="flex items-center justify-center space-x-6">
+                    <button
+                      onClick={toggleMonitoring}
+                      className={`flex items-center space-x-3 px-8 py-4 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-xl relative overflow-hidden ${
+                        isMonitoring 
+                          ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-red-500/30' 
+                          : 'bg-gradient-to-r from-purple-500 via-violet-500 to-pink-500 hover:from-purple-600 hover:via-violet-600 hover:to-pink-600 text-white shadow-purple-500/30'
+                      }`}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity"></div>
+                      {isMonitoring ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
+                      <span className="text-lg relative z-10">{isMonitoring ? 'Stop' : 'Start'} Monitoring</span>
+                    </button>
+                    <button className="flex items-center space-x-3 px-8 py-4 rounded-2xl border-2 border-purple-500/50 text-purple-400 hover:bg-purple-500 hover:text-white transition-all duration-300 hover:border-purple-400 shadow-xl hover:shadow-purple-500/20 group">
+                      <RefreshCw className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" />
+                      <span className="font-semibold">Calibrate System</span>
+                    </button>
+                  </div>
                 </div>
               </div>
-
-              
             </div>
 
             {/* Charts Section */}
-            <div className="grid lg:grid-cols-2 gap-6">
+            <div className="grid lg:grid-cols-2 gap-8">
               {/* Gait Trends */}
-              <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-white">Gait Trends</h3>
-                </div>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={gaitData.slice(-50)} key={gaitData.length} margin={{ top: 5, right: 30, left: 20, bottom: 60 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis 
-                        dataKey="date" 
-                        stroke="#9CA3AF" 
-                        label={{ value: 'Time (samples)', position: 'insideBottom', offset: -10, fill: '#9CA3AF' }}
-                      />
-                      <YAxis 
-                        stroke="#9CA3AF"
-                        label={{ value: 'Movement (pixels)', angle: -90, position: 'insideLeft', fill: '#9CA3AF' }}
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: '#1F2937',
-                          border: '1px solid #6366F1',
-                          borderRadius: '8px',
-                          color: '#F3F4F6'
-                        }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="stride_length"
-                        stroke="#8B5CF6"
-                        strokeWidth={3}
-                        dot={false}
-                        name="Stride Length (px)"
-                        isAnimationActive={false}
-                       />
-                       {/* @ts-ignore */}
-                      <Line
-                        type="monotone"
-                        dataKey="swing_length"
-                        stroke="#EC4899"
-                        strokeWidth={3}
-                        dot={false}
-                        name="Swing Length (px)"
-                        isAnimationActive={false}
-                       />
-                    </LineChart>
-                  </ResponsiveContainer>
+              <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-sm rounded-3xl p-8 border border-purple-500/30 shadow-2xl shadow-purple-500/10 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full blur-2xl"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+                        <TrendingUp className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">Gait Trends</h3>
+                        <p className="text-gray-400 text-sm">Real-time movement analysis</p>
+                      </div>
+                    </div>
+                    <div className="text-xs text-gray-400 bg-slate-700/50 px-3 py-2 rounded-xl border border-slate-600/30">
+                      Last 50 samples
+                    </div>
+                  </div>
+                  <div className="h-80 rounded-2xl bg-gradient-to-br from-slate-900/50 to-slate-800/50 p-4 border border-slate-600/30">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={gaitData.slice(-50)} key={gaitData.length} margin={{ top: 10, right: 30, left: 20, bottom: 50 }}>
+                        <defs>
+                          <linearGradient id="strideGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0}/>
+                          </linearGradient>
+                          <linearGradient id="swingGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#EC4899" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#EC4899" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                        <XAxis 
+                          dataKey="date" 
+                          stroke="#9CA3AF" 
+                          fontSize={12}
+                          label={{ value: 'Time (samples)', position: 'insideBottom', offset: -5, fill: '#9CA3AF' }}
+                        />
+                        <YAxis 
+                          stroke="#9CA3AF"
+                          fontSize={12}
+                          label={{ value: 'Movement (pixels)', angle: -90, position: 'insideLeft', fill: '#9CA3AF' }}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: '#1F2937',
+                            border: '1px solid #6366F1',
+                            borderRadius: '12px',
+                            color: '#F3F4F6',
+                            boxShadow: '0 10px 25px rgba(99, 102, 241, 0.2)'
+                          }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="stride_length"
+                          stroke="#8B5CF6"
+                          strokeWidth={3}
+                          dot={{ fill: '#8B5CF6', strokeWidth: 2, r: 4 }}
+                          activeDot={{ r: 6, stroke: '#8B5CF6', strokeWidth: 2, fill: '#8B5CF6' }}
+                          name="Stride Length (px)"
+                          isAnimationActive={false}
+                          fill="url(#strideGradient)"
+                         />
+                        <Line
+                          type="monotone"
+                          dataKey="swing_length"
+                          stroke="#EC4899"
+                          strokeWidth={3}
+                          dot={{ fill: '#EC4899', strokeWidth: 2, r: 4 }}
+                          activeDot={{ r: 6, stroke: '#EC4899', strokeWidth: 2, fill: '#EC4899' }}
+                          name="Swing Length (px)"
+                          isAnimationActive={false}
+                          fill="url(#swingGradient)"
+                         />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
               </div>
 
               {/* Risk Assessment */}
-              <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center space-x-3">
-                    <AlertTriangle className="w-6 h-6 text-orange-400" />
-                    <h3 className="text-xl font-bold text-white">Neural Risk Assessment</h3>
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    {gaitData && gaitData.length > 0 ? `Based on ${gaitData.length} samples` : 'Awaiting data...'}
-                  </div>
-                </div>
-                <div className="space-y-5">
-                  {riskData.map((item, index) => (
-                    <div key={index} className="space-y-3">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <span className="text-gray-200 font-medium">{item.category}</span>
-                            <div className="text-right">
-                              <span className="text-white font-bold text-lg">{Math.round(item.risk)}%</span>
-                              <div className={`text-xs px-2 py-1 rounded-full inline-block ml-2 ${
-                                item.risk < 20 ? 'bg-green-500/20 text-green-300' :
-                                item.risk < 40 ? 'bg-yellow-500/20 text-yellow-300' :
-                                item.risk < 70 ? 'bg-orange-500/20 text-orange-300' :
-                                'bg-red-500/20 text-red-300'
-                              }`}>
-                                {item.status || 'Unknown'}
-                              </div>
-                            </div>
-                          </div>
-                          {(item as any).indicators && (
-                            <p className="text-xs text-gray-400 mt-1">{(item as any).indicators}</p>
-                          )}
-                        </div>
+              <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-sm rounded-3xl p-8 border border-purple-500/30 shadow-2xl shadow-purple-500/10 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
+                <div className="absolute -top-10 -left-10 w-32 h-32 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-full blur-2xl"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
+                        <AlertTriangle className="w-5 h-5 text-white" />
                       </div>
-                      <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
-                        <div
-                          className={`h-3 rounded-full transition-all duration-1000 ${item.color}`}
-                          style={{ width: `${Math.max(2, item.risk)}%` }}
-                        />
+                      <div>
+                        <h3 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">Neural Risk Assessment</h3>
+                        <p className="text-gray-400 text-sm">AI-powered neurological analysis</p>
                       </div>
                     </div>
-                  ))}
+                    <div className="text-xs text-gray-400 bg-slate-700/50 px-3 py-2 rounded-xl border border-slate-600/30">
+                      {gaitData && gaitData.length > 0 ? `${gaitData.length} samples` : 'Awaiting data...'}
+                    </div>
+                  </div>
+                  <div className="space-y-6">
+                    {riskData.map((item, index) => (
+                      <div key={index} className="space-y-4">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-200 font-semibold text-lg">{item.category}</span>
+                              <div className="text-right flex items-center space-x-3">
+                                <span className="text-white font-bold text-2xl">{Math.round(item.risk)}%</span>
+                                <div className={`text-xs px-3 py-2 rounded-full font-semibold border ${
+                                  item.risk < 20 ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' :
+                                  item.risk < 40 ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' :
+                                  item.risk < 70 ? 'bg-orange-500/20 text-orange-300 border-orange-500/30' :
+                                  'bg-red-500/20 text-red-300 border-red-500/30'
+                                }`}>
+                                  {item.status || 'Unknown'}
+                                </div>
+                              </div>
+                            </div>
+                            {(item as any).indicators && (
+                              <p className="text-sm text-gray-400 mt-2 bg-slate-700/30 rounded-lg p-3">{(item as any).indicators}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="w-full bg-slate-700/50 rounded-full h-4 overflow-hidden shadow-inner border border-slate-600/30">
+                          <div
+                            className={`h-4 rounded-full transition-all duration-1000 shadow-lg ${item.color} relative overflow-hidden`}
+                            style={{ width: `${Math.max(3, item.risk)}%` }}
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"></div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 
                 {/* Dynamic recommendation based on highest risk */}
@@ -1074,70 +1193,121 @@ const GaitGuardDashboard = () => {
             </div>
 
             {/* Alerts and Recent Activity */}
-            <div className="grid lg:grid-cols-2 gap-6">
+            <div className="grid lg:grid-cols-2 gap-8">
               {/* Alerts */}
-              <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center space-x-3">
-                    <h3 className="text-xl font-bold text-white">Recent Alerts</h3>
-                    {(() => {
-                      const highPriorityCount = alerts.filter(alert => alert.type === 'error' || alert.type === 'warning').length;
-                      if (highPriorityCount > 0) {
-                        return (
-                          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                            alerts.some(alert => alert.type === 'error') 
-                              ? 'bg-red-500/20 text-red-300 border border-red-500/30' 
-                              : 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
-                          }`}>
-                            {highPriorityCount} Priority
-                          </span>
-                        );
-                      }
-                      return null;
-                    })()}
+              <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-sm rounded-3xl p-8 border border-purple-500/30 shadow-2xl shadow-purple-500/10 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
+                <div className="absolute -top-10 -left-10 w-32 h-32 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-full blur-2xl"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
+                        <Bell className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">Recent Alerts</h3>
+                        <p className="text-gray-400 text-sm">Real-time notifications</p>
+                      </div>
+                      {(() => {
+                        const highPriorityCount = alerts.filter(alert => alert.type === 'error' || alert.type === 'warning').length;
+                        if (highPriorityCount > 0) {
+                          return (
+                            <span className={`px-3 py-2 rounded-xl text-xs font-bold border shadow-lg ${
+                              alerts.some(alert => alert.type === 'error') 
+                                ? 'bg-red-500/20 text-red-300 border-red-500/40 shadow-red-500/20' 
+                                : 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-amber-500/20'
+                            }`}>
+                              {highPriorityCount} Priority
+                            </span>
+                          );
+                        }
+                        return null;
+                      })()}
+                    </div>
+                    <button className="text-purple-400 hover:text-purple-300 transition-all duration-300 text-sm font-medium bg-purple-500/10 hover:bg-purple-500/20 px-4 py-2 rounded-xl border border-purple-500/30">
+                      View All
+                    </button>
                   </div>
-                  <button className="text-purple-400 hover:text-purple-300 transition-colors">
-                    View All
-                  </button>
-                </div>
-                <div className="space-y-4">
-                  {alerts.map((alert) => (
-                    <div
-                      key={alert.id}
-                      className={`p-4 rounded-lg border-l-4 ${getAlertColor(alert.type)}`}
-                    >
-                      <div className="flex items-start space-x-3">
-                        {getAlertIcon(alert.type)}
-                        <div className="flex-1">
-                          <p className="text-white text-sm">{alert.message}</p>
-                          <p className="text-gray-400 text-xs mt-1">{alert.time}</p>
+                  <div className="space-y-4">
+                    {alerts.map((alert) => (
+                      <div
+                        key={alert.id}
+                        className={`p-5 rounded-2xl border-l-4 shadow-lg relative overflow-hidden ${getAlertColor(alert.type)} transition-all duration-300 hover:scale-[1.02]`}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent"></div>
+                        <div className="flex items-start space-x-4 relative z-10">
+                          <div className="mt-1">
+                            {getAlertIcon(alert.type)}
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-white text-sm font-medium leading-relaxed">{alert.message}</p>
+                            <div className="flex items-center justify-between mt-3">
+                              <p className="text-gray-400 text-xs">{alert.time}</p>
+                              <div className={`text-xs px-2 py-1 rounded-full font-semibold ${
+                                alert.type === 'error' ? 'bg-red-500/20 text-red-300' :
+                                alert.type === 'warning' ? 'bg-amber-500/20 text-amber-300' :
+                                alert.type === 'success' ? 'bg-emerald-500/20 text-emerald-300' :
+                                'bg-blue-500/20 text-blue-300'
+                              }`}>
+                                {alert.type.toUpperCase()}
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
 
               {/* Quick Actions */}
-              <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20">
-                <h3 className="text-xl font-bold text-white mb-6">Quick Actions</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <button className="flex flex-col items-center space-y-2 p-4 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl border border-purple-500/30 hover:from-purple-500/30 hover:to-pink-500/30 transition-all">
-                    <Download className="w-8 h-8 text-purple-400" />
-                    <span className="text-white text-sm">Export Report</span>
-                  </button>
-                  <button className="flex flex-col items-center space-y-2 p-4 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-xl border border-blue-500/30 hover:from-blue-500/30 hover:to-cyan-500/30 transition-all">
-                    <Calendar className="w-8 h-8 text-blue-400" />
-                    <span className="text-white text-sm">Schedule Test</span>
-                  </button>
-                  <button className="flex flex-col items-center space-y-2 p-4 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-xl border border-green-500/30 hover:from-green-500/30 hover:to-emerald-500/30 transition-all">
-                    <Settings className="w-8 h-8 text-green-400" />
-                    <span className="text-white text-sm">Configure</span>
-                  </button>
-                  <button className="flex flex-col items-center space-y-2 p-4 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl border border-orange-500/30 hover:from-orange-500/30 hover:to-red-500/30 transition-all">
-                    <Clock className="w-8 h-8 text-orange-400" />
-                    <span className="text-white text-sm">History</span>
-                  </button>
+              <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-sm rounded-3xl p-8 border border-purple-500/30 shadow-2xl shadow-purple-500/10 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full blur-2xl"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center space-x-3 mb-8">
+                    <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
+                      <Settings className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">Quick Actions</h3>
+                      <p className="text-gray-400 text-sm">Essential tools and shortcuts</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button className="group flex flex-col items-center space-y-3 p-6 bg-gradient-to-br from-purple-500/20 via-violet-500/10 to-pink-500/20 rounded-2xl border border-purple-500/40 hover:from-purple-500/30 hover:via-violet-500/20 hover:to-pink-500/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-purple-500/20 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-purple-500/30 transition-all">
+                        <Download className="w-6 h-6 text-white" />
+                      </div>
+                      <span className="text-white font-semibold relative z-10">Export Report</span>
+                      <span className="text-gray-400 text-xs text-center relative z-10">Download analysis data</span>
+                    </button>
+                    <button className="group flex flex-col items-center space-y-3 p-6 bg-gradient-to-br from-blue-500/20 via-cyan-500/10 to-indigo-500/20 rounded-2xl border border-blue-500/40 hover:from-blue-500/30 hover:via-cyan-500/20 hover:to-indigo-500/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-blue-500/20 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-blue-500/30 transition-all">
+                        <Calendar className="w-6 h-6 text-white" />
+                      </div>
+                      <span className="text-white font-semibold relative z-10">Schedule Test</span>
+                      <span className="text-gray-400 text-xs text-center relative z-10">Book consultation</span>
+                    </button>
+                    <button className="group flex flex-col items-center space-y-3 p-6 bg-gradient-to-br from-emerald-500/20 via-green-500/10 to-teal-500/20 rounded-2xl border border-emerald-500/40 hover:from-emerald-500/30 hover:via-green-500/20 hover:to-teal-500/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-emerald-500/20 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <div className="w-12 h-12 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-emerald-500/30 transition-all">
+                        <Settings className="w-6 h-6 text-white" />
+                      </div>
+                      <span className="text-white font-semibold relative z-10">Configure</span>
+                      <span className="text-gray-400 text-xs text-center relative z-10">System settings</span>
+                    </button>
+                    <button className="group flex flex-col items-center space-y-3 p-6 bg-gradient-to-br from-orange-500/20 via-amber-500/10 to-red-500/20 rounded-2xl border border-orange-500/40 hover:from-orange-500/30 hover:via-amber-500/20 hover:to-red-500/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-orange-500/20 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <div className="w-12 h-12 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-orange-500/30 transition-all">
+                        <Clock className="w-6 h-6 text-white" />
+                      </div>
+                      <span className="text-white font-semibold relative z-10">History</span>
+                      <span className="text-gray-400 text-xs text-center relative z-10">View past data</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
