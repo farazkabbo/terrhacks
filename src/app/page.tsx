@@ -208,7 +208,7 @@ const GaitGuardLanding = () => {
               <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center animate-glow">
                 <Activity className="w-6 h-6 text-white animate-bounce-subtle" />
               </div>
-              <span className="text-2xl font-bold text-white">GaitGuard AI</span>
+              <span className="text-2xl font-bold text-white">NeuroGait</span>
             </div>
             
             <div className="hidden md:flex items-center space-x-8 animate-slide-in-right">
@@ -308,7 +308,7 @@ const GaitGuardLanding = () => {
                 </span> Years Earlier
               </h1>
               <p className="text-xl text-gray-300 mb-8 leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-                GaitGuard AI monitors walking patterns through your webcam, using advanced AI to detect early signs of Parkinson's and Alzheimer's disease for timely intervention.
+                NeuroGait monitors walking patterns through your webcam, using advanced AI to detect early signs of Parkinson's and Alzheimer's disease for timely intervention.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
                 <SignedOut>
@@ -420,7 +420,7 @@ const GaitGuardLanding = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-on-scroll animate-fade-in-up">
             <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-              How <span className="text-purple-400">GaitGuard AI</span> Works
+              How <span className="text-purple-400">NeuroGait</span> Works
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Simple setup, powerful insights, life-changing early detection
@@ -524,7 +524,7 @@ const GaitGuardLanding = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-on-scroll animate-fade-in-up">
             <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-              Why Choose <span className="text-purple-400">GaitGuard AI</span>?
+              Why Choose <span className="text-purple-400">NeuroGait</span>?
             </h2>
           </div>
 
@@ -580,7 +580,7 @@ const GaitGuardLanding = () => {
             Start Protecting Your Health Today
           </h2>
           <p className="text-xl text-purple-100 mb-8 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-            Join thousands of families using GaitGuard AI for early detection and peace of mind
+            Join thousands of families using NeuroGait for early detection and peace of mind
           </p>
           
           <SignedOut>
@@ -612,7 +612,7 @@ const GaitGuardLanding = () => {
                 <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center animate-glow">
                   <Activity className="w-6 h-6 text-white animate-bounce-subtle" />
                 </div>
-                <span className="text-2xl font-bold text-white">GaitGuard AI</span>
+                <span className="text-2xl font-bold text-white">NeuroGait</span>
               </div>
               <p className="text-gray-400 mb-6 max-w-md hover:text-gray-300 transition-colors duration-300">
                 Advanced AI-powered gait monitoring for early detection of neurodegenerative diseases.
@@ -656,7 +656,7 @@ const GaitGuardLanding = () => {
           
           <div className="border-t border-gray-800 mt-12 pt-8 text-center animate-on-scroll opacity-0 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
             <p className="text-gray-400 hover:text-gray-300 transition-colors duration-300">
-              © 2025 GaitGuard AI. All rights reserved.
+              © 2025 NeuroGait. All rights reserved.
             </p>
           </div>
         </div>

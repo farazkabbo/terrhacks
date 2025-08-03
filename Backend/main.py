@@ -27,7 +27,7 @@ app.add_middleware(
 )
 
 # Initialize MediaPipe pose detector
-base_options = python.BaseOptions(model_asset_path='Backend/Gait Detection/pose_landmarker.task')
+base_options = python.BaseOptions(model_asset_path='Gait Detection/pose_landmarker.task')
 options = vision.PoseLandmarkerOptions(
     base_options=base_options,
     output_segmentation_masks=True,

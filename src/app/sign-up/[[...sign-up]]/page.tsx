@@ -11,7 +11,7 @@ export default function Page() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <span className="text-3xl font-bold text-white">GaitGuard AI</span>
+            <span className="text-3xl font-bold text-white">NeuroGait</span>
           </div>
           <p className="text-gray-300">Create your account to start monitoring</p>
         </div>
