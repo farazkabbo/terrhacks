@@ -745,11 +745,11 @@ const GaitGuardDashboard = () => {
               </a>
               <a href="#" className="flex items-center space-x-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-slate-700/50 hover:to-slate-600/50 rounded-xl px-4 py-3 transition-all duration-300 group">
                 <TrendingUp className="w-5 h-5 group-hover:text-green-400 transition-colors" />
-                <span>Reports</span>
+                <span>Gait Trends</span>
               </a>
               <a href="#" className="flex items-center space-x-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-slate-700/50 hover:to-slate-600/50 rounded-xl px-4 py-3 transition-all duration-300 group">
                 <Calendar className="w-5 h-5 group-hover:text-blue-400 transition-colors" />
-                <span>History</span>
+                <span>Report History</span>
               </a>
               <a href="#" className="flex items-center space-x-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-slate-700/50 hover:to-slate-600/50 rounded-xl px-4 py-3 transition-all duration-300 group">
                 <Settings className="w-5 h-5 group-hover:text-orange-400 transition-colors" />
