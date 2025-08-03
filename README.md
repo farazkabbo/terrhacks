@@ -14,8 +14,8 @@
 
 ## 🛠️ Tech Stack Used
 
-- **Front-end:** React.js, Next.js, React Bits, TypeScript  
-- **Back-end:** Python, FastAPI, WebSockets  
+- **Front-end:** React.js, Next.js, TypeScript  
+- **Back-end:** Python, FastAPI, WebSockets, Flask  
 - **Computer Vision:** OpenCV, MediaPipe  
 
 ---
