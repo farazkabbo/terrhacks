@@ -781,20 +781,74 @@ const GaitGuardDashboard = () => {
 
           {/* Main Content */}
           <main className="flex-1 p-6 space-y-6">
-            {/* Welcome Section */}
-            <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-purple-500/20">
-              <h2 className="text-2xl font-bold text-white mb-2">
-                Welcome back, {user?.firstName || user?.emailAddresses[0]?.emailAddress?.split('@')[0]}!
-              </h2>
-              <p className="text-gray-300">
-                Your gait monitoring system is ready. Let's keep track of your health metrics.
-              </p>
+            {/* Welcome + Metrics Section in one line */}
+            <div className="grid grid-cols-4 gap-6 mb-6">
+              {/* Welcome Section - spans 3 columns */}
+              <div className="col-span-3 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-purple-500/20 flex flex-col items-center justify-center text-center">
+                <h2 className="text-3xl font-extrabold text-white mb-3 tracking-tight">
+                  Welcome back, {user?.firstName || user?.emailAddresses[0]?.emailAddress?.split('@')[0]}!
+                </h2>
+                <p className="text-lg text-gray-300 max-w-xl">
+                  Your gait monitoring system is ready.<br />
+                  Let's keep track of your health metrics and stay proactive.
+                </p>
+              </div>
+              {/* Current Metrics - spans 1 column */}
+              <div className="col-span-1 space-y-4 flex flex-col justify-center">
+                <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <Heart className="w-6 h-6 text-red-400" />
+                    <h3 className="text-lg font-semibold text-white">Current Status</h3>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">WebSocket</span>
+                      <span className={`font-semibold ${
+                        wsStatus === 'connected' ? 'text-green-400' :
+                        wsStatus === 'error' ? 'text-red-400' : 'text-yellow-400'
+                      }`}>
+                        {wsStatus.charAt(0).toUpperCase() + wsStatus.slice(1)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Frames Sent</span>
+                      <span className="text-white font-semibold">{frameCount}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Queue Size</span>
+                      <span className={`font-semibold ${
+                        processingQueue.current > 3 ? 'text-red-400' : 
+                        processingQueue.current > 1 ? 'text-yellow-400' : 'text-green-400'
+                      }`}>
+                        {processingQueue.current}
+                      </span>
+                    </div>
+                    {droppedFrames > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Dropped</span>
+                        <span className="text-orange-400 font-semibold">{droppedFrames}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Processing</span>
+                      <span className={`font-semibold ${isMonitoring ? 'text-green-400' : 'text-gray-400'}`}>
+                        {isMonitoring ? (isProcessing ? 'Active' : 'Ready') : 'Inactive'}
+                      </span>
+                    </div>
+                    {processingStatus && (
+                      <div className="text-xs text-gray-300 mt-2 p-2 bg-slate-700/50 rounded">
+                        {processingStatus}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Monitoring Status & Quick Actions */}
             <div className="grid lg:grid-cols-3 gap-6">
-              {/* Live Status */}
-              <div className="lg:col-span-2 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20">
+              {/* Live Status - Made bigger */}
+              <div className="lg:col-span-3 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold text-white">Live Monitoring</h2>
                   <div className="flex items-center space-x-2">
@@ -803,11 +857,11 @@ const GaitGuardDashboard = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                   {/* Input Webcam */}
                   <div className="space-y-2">
                     <h3 className="text-lg font-semibold text-white">Camera Input</h3>
-                    <div className="aspect-video bg-slate-900/50 rounded-xl flex items-center justify-center border border-purple-500/20">
+                    <div className="aspect-[4/3] bg-slate-900/50 rounded-xl flex items-center justify-center border border-purple-500/20">
                       {isMonitoring ? (
                         WebcamComponent()
                       ) : (
@@ -822,7 +876,7 @@ const GaitGuardDashboard = () => {
                   {/* Processed Output */}
                   <div className="space-y-2">
                     <h3 className="text-lg font-semibold text-white">AI Analysis</h3>
-                    <div className="aspect-video bg-slate-900/50 rounded-xl flex items-center justify-center border border-purple-500/20">
+                    <div className="aspect-[4/3] bg-slate-900/50 rounded-xl flex items-center justify-center border border-purple-500/20">
                       {isMonitoring ? (
                         ProcessedImageComponent()
                       ) : (
@@ -854,57 +908,7 @@ const GaitGuardDashboard = () => {
                 </div>
               </div>
 
-              {/* Current Metrics */}
-              <div className="space-y-4">
-                <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <Heart className="w-6 h-6 text-red-400" />
-                    <h3 className="text-lg font-semibold text-white">Current Status</h3>
-                  </div>
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">WebSocket</span>
-                        <span className={`font-semibold ${
-                          wsStatus === 'connected' ? 'text-green-400' :
-                          wsStatus === 'error' ? 'text-red-400' : 'text-yellow-400'
-                        }`}>
-                          {wsStatus.charAt(0).toUpperCase() + wsStatus.slice(1)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Frames Sent</span>
-                        <span className="text-white font-semibold">{frameCount}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Queue Size</span>
-                        <span className={`font-semibold ${
-                          processingQueue.current > 3 ? 'text-red-400' : 
-                          processingQueue.current > 1 ? 'text-yellow-400' : 'text-green-400'
-                        }`}>
-                          {processingQueue.current}
-                        </span>
-                      </div>
-                      {droppedFrames > 0 && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Dropped</span>
-                          <span className="text-orange-400 font-semibold">{droppedFrames}</span>
-                        </div>
-                      )}
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Processing</span>
-                        <span className={`font-semibold ${isMonitoring ? 'text-green-400' : 'text-gray-400'}`}>
-                          {isMonitoring ? (isProcessing ? 'Active' : 'Ready') : 'Inactive'}
-                        </span>
-                      </div>
-                      {processingStatus && (
-                        <div className="text-xs text-gray-300 mt-2 p-2 bg-slate-700/50 rounded">
-                          {processingStatus}
-                        </div>
-                      )}
-                    </div>
-                </div>
-
-              </div>
+              
             </div>
 
             {/* Charts Section */}
@@ -913,28 +917,20 @@ const GaitGuardDashboard = () => {
               <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-white">Gait Trends</h3>
-                  <div className="flex space-x-2">
-                    {['7d', '30d', '90d'].map((range) => (
-                      <button
-                        key={range}
-                        onClick={() => setSelectedTimeRange(range)}
-                        className={`px-3 py-1 rounded-lg text-sm transition-all ${
-                          selectedTimeRange === range
-                            ? 'bg-purple-500 text-white'
-                            : 'text-gray-400 hover:text-white hover:bg-slate-700/50'
-                        }`}
-                      >
-                        {range}
-                      </button>
-                    ))}
-                  </div>
                 </div>
-                <div className="h-64">
+                <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={gaitData.slice(-50)} key={gaitData.length} >
+                    <LineChart data={gaitData.slice(-50)} key={gaitData.length} margin={{ top: 5, right: 30, left: 20, bottom: 60 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis dataKey="date" stroke="#9CA3AF" />
-                      <YAxis stroke="#9CA3AF" />
+                      <XAxis 
+                        dataKey="date" 
+                        stroke="#9CA3AF" 
+                        label={{ value: 'Time (samples)', position: 'insideBottom', offset: -10, fill: '#9CA3AF' }}
+                      />
+                      <YAxis 
+                        stroke="#9CA3AF"
+                        label={{ value: 'Movement (pixels)', angle: -90, position: 'insideLeft', fill: '#9CA3AF' }}
+                      />
                       <Tooltip
                         contentStyle={{
                           backgroundColor: '#1F2937',
