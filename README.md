@@ -8,7 +8,8 @@
 
 - Mohammed Faraz Kabbo: [github.com/farazkabbo](https://github.com/farazkabbo)
 - Ishaan Mittal: [github.com/ishaanmittal](https://github.com/ishaanmittal)  
-- [Add other authors here in the same format]
+- Ammar Faisal: [github.com/Ammar9faisal](https://github.com/Ammar9faisal)
+- Grant Ou: [github.com/grantmgci2025] (https://github.com/grantmgci2025)
 
 ---
 
